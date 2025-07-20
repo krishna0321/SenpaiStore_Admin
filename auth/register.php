@@ -1,30 +1,36 @@
 <?php
 session_start();
-require("../config/db.php"); // This uses PDO
+require("../config/db.php");
 
 $error = "";
 $success = "";
 
+// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $username = trim($_POST['username'] ?? '');
   $password = trim($_POST['password'] ?? '');
 
-  if (strlen($username) < 3 || strlen($password) < 4) {
-    $error = "Username or password too short.";
+  // Basic validation
+  if (strlen($username) < 3) {
+    $error = "Username must be at least 3 characters.";
+  } elseif (strlen($password) < 4) {
+    $error = "Password must be at least 4 characters.";
   } else {
-    // Check if username exists (PDO)
+    // Check if username already exists
     $stmt = $conn->prepare("SELECT id FROM admins WHERE username = ?");
     $stmt->execute([$username]);
 
     if ($stmt->rowCount() > 0) {
-      $error = "Username already exists.";
+      $error = "Username is already taken.";
     } else {
+      // Hash the password and insert new user
       $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
       $insert = $conn->prepare("INSERT INTO admins (username, password) VALUES (?, ?)");
+
       if ($insert->execute([$username, $hashedPassword])) {
-        $success = "Account created! You can now login.";
+        $success = "Account created successfully! <a href='login.php'>Login here</a>.";
       } else {
-        $error = "Something went wrong. Try again.";
+        $error = "Registration failed. Please try again.";
       }
     }
   }
@@ -43,28 +49,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo"><b>SenpaiStore</b> Register</div>
+
   <div class="card">
     <div class="card-body login-card-body">
       <p class="login-box-msg">Create a new admin account</p>
 
-      <?php if ($error): ?>
-        <div class="alert alert-danger"><?php echo $error; ?></div>
+      <?php if (!empty($error)): ?>
+        <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
       <?php endif; ?>
 
-      <?php if ($success): ?>
-        <div class="alert alert-success"><?php echo $success; ?></div>
+      <?php if (!empty($success)): ?>
+        <div class="alert alert-success"><?= $success ?></div>
       <?php endif; ?>
 
-      <form method="POST">
+      <form method="POST" autocomplete="off">
         <div class="input-group mb-3">
-          <input type="text" name="username" class="form-control" placeholder="Username" required>
+          <input type="text" name="username" class="form-control" placeholder="Username" required minlength="3" autofocus>
           <div class="input-group-append">
             <div class="input-group-text"><span class="fas fa-user"></span></div>
           </div>
         </div>
 
         <div class="input-group mb-3">
-          <input type="password" name="password" class="form-control" placeholder="Password" required>
+          <input type="password" name="password" class="form-control" placeholder="Password" required minlength="4">
           <div class="input-group-append">
             <div class="input-group-text"><span class="fas fa-lock"></span></div>
           </div>

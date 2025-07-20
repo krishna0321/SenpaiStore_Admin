@@ -2,12 +2,19 @@
 include("../includes/auth.php");
 include("../config/db.php");
 
-$id = $_GET['id'] ?? null;
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-if ($id) {
+if ($id > 0) {
   $stmt = $conn->prepare("DELETE FROM orders WHERE id = ?");
   $stmt->execute([$id]);
-}
 
-header("Location: index.php");
+  // Optional: Check if deletion was successful
+  if ($stmt->rowCount() > 0) {
+    header("Location: index.php?deleted=1");
+  } else {
+    header("Location: index.php?error=notfound");
+  }
+} else {
+  header("Location: index.php?error=invalidid");
+}
 exit;

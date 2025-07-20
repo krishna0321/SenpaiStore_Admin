@@ -13,6 +13,19 @@
     </div>
   </section>
 
+  <!-- Success / Error Messages -->
+  <section class="content mt-2">
+    <div class="container-fluid">
+      <?php if (isset($_GET['deleted'])): ?>
+        <div class="alert alert-success">Product deleted successfully.</div>
+      <?php elseif (isset($_GET['error']) && $_GET['error'] === 'notfound'): ?>
+        <div class="alert alert-danger">Product not found or already deleted.</div>
+      <?php elseif (isset($_GET['error']) && $_GET['error'] === 'invalidid'): ?>
+        <div class="alert alert-warning">Invalid product ID.</div>
+      <?php endif; ?>
+    </div>
+  </section>
+
   <!-- Main Content -->
   <section class="content">
     <div class="container-fluid">
@@ -22,11 +35,13 @@
         <strong class="me-3">Filter by Category:</strong>
         <select id="categoryFilter" class="form-select form-select-sm me-3" style="width:auto;">
           <option value="all" <?= (!isset($_GET['category']) || $_GET['category'] == 'all') ? 'selected' : '' ?>>All</option>
-          <option value="Clothing" <?= (isset($_GET['category']) && $_GET['category'] == 'Clothing') ? 'selected' : '' ?>>Clothing</option>
-          <option value="Accessories" <?= (isset($_GET['category']) && $_GET['category'] == 'Accessories') ? 'selected' : '' ?>>Accessories</option>
-          <option value="Toys" <?= (isset($_GET['category']) && $_GET['category'] == 'Toys') ? 'selected' : '' ?>>Toys</option>
-          <option value="Stationery" <?= (isset($_GET['category']) && $_GET['category'] == 'Stationery') ? 'selected' : '' ?>>Stationery</option>
-          <option value="Posters" <?= (isset($_GET['category']) && $_GET['category'] == 'Posters') ? 'selected' : '' ?>>Posters</option>
+          <?php
+          $categories = ['Clothing', 'Accessories', 'Toys', 'Stationery', 'Posters'];
+          foreach ($categories as $cat) {
+            $selected = (isset($_GET['category']) && $_GET['category'] === $cat) ? 'selected' : '';
+            echo "<option value=\"$cat\" $selected>$cat</option>";
+          }
+          ?>
         </select>
 
         <strong class="me-3">Sort by ID:</strong>
@@ -66,19 +81,30 @@
                 $stmt = $conn->query("SELECT * FROM products ORDER BY id $sort");
               }
 
-              while ($row = $stmt->fetch()) {
-                echo "<tr>
-                  <td>{$row['id']}</td>
-                  <td>{$row['name']}</td>
-                  <td>₹{$row['price']}</td>
-                  <td>{$row['stock']}</td>
-                  <td>{$row['category']}</td>
-                  <td><img src='../assets/images/{$row['image']}' width='60' height='60' style='object-fit:cover;'></td>
-                  <td>
-                    <a href='edit.php?id={$row['id']}' class='btn btn-sm btn-warning'><i class='fas fa-edit'></i></a>
-                    <a href='delete.php?id={$row['id']}' class='btn btn-sm btn-danger' onclick='return confirm(\"Are you sure?\")'><i class='fas fa-trash'></i></a>
-                  </td>
-                </tr>";
+              if ($stmt->rowCount() === 0) {
+                echo "<tr><td colspan='7'>No products found.</td></tr>";
+              } else {
+                while ($row = $stmt->fetch()) {
+                  $name = htmlspecialchars($row['name']);
+                  $cat = htmlspecialchars($row['category']);
+                  $imagePath = "../assets/images/{$row['image']}";
+                  $imageTag = file_exists($imagePath)
+                    ? "<img src='$imagePath' width='60' height='60' style='object-fit:cover;'>"
+                    : "<span class='text-muted'>No Image</span>";
+
+                  echo "<tr>
+                    <td>{$row['id']}</td>
+                    <td>$name</td>
+                    <td>₹{$row['price']}</td>
+                    <td>{$row['stock']}</td>
+                    <td>$cat</td>
+                    <td>$imageTag</td>
+                    <td>
+                      <a href='edit.php?id={$row['id']}' class='btn btn-sm btn-warning'><i class='fas fa-edit'></i></a>
+                      <a href='delete.php?id={$row['id']}' class='btn btn-sm btn-danger' onclick='return confirm(\"Are you sure?\")'><i class='fas fa-trash'></i></a>
+                    </td>
+                  </tr>";
+                }
               }
               ?>
             </tbody>
@@ -89,6 +115,7 @@
   </section>
 </div>
 
+<!-- JS for filters -->
 <script>
   const categoryFilter = document.getElementById('categoryFilter');
   const sortOrder = document.getElementById('sortOrder');
