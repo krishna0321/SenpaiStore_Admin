@@ -28,23 +28,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>SenpaiStore Admin Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <link rel="stylesheet" href="../assets/plugins/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/adminlte.min.css">
   <style>
     body {
       margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      font-family: 'Segoe UI', sans-serif;
       height: 100vh;
+      background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -52,44 +50,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     .login-box {
       width: 400px;
-      background: rgba(255, 255, 255, 0.1);
+      padding: 35px;
+      background: rgba(255, 255, 255, 0.05);
       border-radius: 16px;
-      padding: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+      color: #ffffff;
+      position: relative;
     }
 
     .login-logo {
-      font-size: 28px;
-      font-weight: 700;
       text-align: center;
-      margin-bottom: 25px;
-      color: #00ccff;
+      font-size: 30px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #00f2fe;
       letter-spacing: 1px;
     }
 
     .login-box-msg {
       text-align: center;
-      font-size: 16px;
-      margin-bottom: 25px;
       color: #ccc;
+      margin-bottom: 20px;
+      font-size: 16px;
     }
 
     .form-control {
       background-color: rgba(255, 255, 255, 0.07);
       border: none;
-      border-bottom: 1px solid #888;
+      border-bottom: 2px solid #888;
       color: #fff;
-      border-radius: 4px;
+      border-radius: 5px;
+      transition: 0.3s;
     }
 
     .form-control:focus {
       background-color: rgba(255, 255, 255, 0.1);
-      border-color: #00ccff;
-      box-shadow: none;
+      border-color: #00f2fe;
+      box-shadow: 0 0 8px #00f2fe;
     }
 
     .form-control::placeholder {
@@ -97,27 +96,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     .input-group-text {
-      background-color: transparent;
+      background: transparent;
       border: none;
-      color: #00ccff;
+      color: #ff6ec4;
     }
 
     .btn-primary {
-      background-color: #00ccff;
+      background-image: linear-gradient(to right, #00f2fe, #ff6ec4);
       border: none;
-      font-weight: 600;
+      font-weight: bold;
+      color: #fff;
     }
 
     .btn-primary:hover {
-      background-color: #00a3cc;
+      background-image: linear-gradient(to right, #ff6ec4, #00f2fe);
     }
 
     .text-link {
-      color: #00ccff;
+      color: #00f2fe;
       font-size: 14px;
-      display: block;
-      margin-top: 10px;
-      text-align: left;
     }
 
     .text-link:hover {
@@ -125,38 +122,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     .alert-danger {
-      background: rgba(255, 0, 0, 0.1);
+      background-color: rgba(255, 0, 0, 0.15);
       color: #ff6b6b;
       border: none;
       font-size: 14px;
       padding: 10px 15px;
-      border-radius: 4px;
+      border-radius: 5px;
+    }
+
+    .toggle-password {
+      cursor: pointer;
+      color: #00f2fe;
+    }
+
+    .typing-effect:focus {
+      border-color: #ff6ec4;
+      box-shadow: 0 0 6px #ff6ec4;
     }
   </style>
 </head>
 <body>
   <div class="login-box">
     <div class="login-logo">SenpaiStore Admin</div>
-    <p class="login-box-msg">Login to continue</p>
+    <p class="login-box-msg">Login to your dashboard</p>
 
     <?php if (!empty($error)): ?>
       <div class="alert alert-danger">
-        <i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($error) ?>
+        <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
       </div>
     <?php endif; ?>
 
     <form method="POST" autocomplete="off">
       <div class="input-group mb-3">
-        <input type="text" name="username" class="form-control" placeholder="Enter your username" required autofocus>
+        <input type="text" name="username" class="form-control typing-effect" placeholder="Username" required>
         <div class="input-group-append">
-          <div class="input-group-text"><span class="fas fa-user"></span></div>
+          <div class="input-group-text"><i class="fas fa-user"></i></div>
         </div>
       </div>
 
       <div class="input-group mb-3">
-        <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+        <input type="password" name="password" id="password" class="form-control typing-effect" placeholder="Password" required>
         <div class="input-group-append">
-          <div class="input-group-text"><span class="fas fa-lock"></span></div>
+          <div class="input-group-text toggle-password"><i class="fas fa-eye" id="eye-icon"></i></div>
         </div>
       </div>
 
@@ -174,5 +181,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <script src="../assets/plugins/jquery/jquery.min.js"></script>
   <script src="../assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/adminlte.min.js"></script>
+  <script>
+    // Toggle password visibility
+    document.querySelector(".toggle-password").addEventListener("click", function () {
+      const input = document.getElementById("password");
+      const icon = document.getElementById("eye-icon");
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    });
+
+    // Typing input glow
+    document.querySelectorAll('.typing-effect').forEach(input => {
+      input.addEventListener('input', () => {
+        input.style.borderColor = "#ff6ec4";
+        input.style.boxShadow = "0 0 5px #ff6ec4";
+      });
+    });
+  </script>
 </body>
 </html>

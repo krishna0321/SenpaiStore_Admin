@@ -6,7 +6,7 @@
   <!-- Header Section -->
   <section class="content-header">
     <div class="container-fluid d-flex justify-content-between align-items-center">
-      <h1 class="m-0">🛒 Products</h1>
+      <h1 class="m-0">🛍️ Anime Merchandise Collection</h1>
       <a href="add.php" class="btn btn-primary">
         <i class="fas fa-plus"></i> Add Product
       </a>
@@ -36,7 +36,7 @@
         <select id="categoryFilter" class="form-select form-select-sm me-3" style="width:auto;">
           <option value="all" <?= (!isset($_GET['category']) || $_GET['category'] == 'all') ? 'selected' : '' ?>>All</option>
           <?php
-          $categories = ['Clothing', 'Accessories', 'Toys', 'Stationery', 'Posters'];
+          $categories = ['Figures', 'Clothing', 'Accessories', 'Manga', 'Plushies', 'Posters', 'Stationery'];
           foreach ($categories as $cat) {
             $selected = (isset($_GET['category']) && $_GET['category'] === $cat) ? 'selected' : '';
             echo "<option value=\"$cat\" $selected>$cat</option>";
