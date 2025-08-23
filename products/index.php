@@ -87,9 +87,12 @@
                 while ($row = $stmt->fetch()) {
                   $name = htmlspecialchars($row['name']);
                   $cat = htmlspecialchars($row['category']);
-                  $imagePath = "../assets/images/{$row['image']}";
-                  $imageTag = file_exists($imagePath)
-                    ? "<img src='$imagePath' width='60' height='60' style='object-fit:cover;'>"
+
+                  // ✅ Corrected image handling
+                  $image = isset($row['image']) ? $row['image'] : null;
+                  $imagePath = $image ? "../assets/images/$image" : null;
+                  $imageTag = ($imagePath && file_exists($imagePath))
+                    ? "<img src='$imagePath' width='60' height='60' style='object-fit:cover;' alt='product'>"
                     : "<span class='text-muted'>No Image</span>";
 
                   echo "<tr>

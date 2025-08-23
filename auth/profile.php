@@ -1,12 +1,32 @@
 <?php
-require_once '../includes/auth.php';
-require_once '../config/db.php';
-require_once '../includes/header.php';
+session_start();
 
-// Get current admin data
-$stmt = $pdo->prepare("SELECT * FROM admins WHERE id = :id");
-$stmt->execute(['id' => $_SESSION['admin_id']]);
-$admin = $stmt->fetch();
+// Check if logged in
+if (empty($_SESSION['admin_logged_in'])) {
+    header('Location: ../auth/login.php');
+    exit();
+}
+
+// Optional: session timeout
+$timeout = 900; // 15 minutes
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $timeout)) {
+    session_unset();
+    session_destroy();
+    header('Location: ../auth/login.php?timeout=1');
+    exit();
+}
+$_SESSION['LAST_ACTIVITY'] = time();
+
+// Your admin data — since it's hardcoded, you can set here as well:
+$admin = [
+    'name' => 'Admin',
+    'username' => $_SESSION['admin_username'],
+    'email' => 'admin@example.com',
+    'role' => 'Administrator',
+];
+
+// Include your header.php and footer.php as needed
+require_once '../includes/header.php';
 ?>
 
 <div class="content-wrapper">
@@ -20,10 +40,11 @@ $admin = $stmt->fetch();
         <h4>Name: <?= htmlspecialchars($admin['name']) ?></h4>
         <h4>Username: <?= htmlspecialchars($admin['username']) ?></h4>
         <h4>Email: <?= htmlspecialchars($admin['email']) ?></h4>
-        <h4>Role: <?= htmlspecialchars($admin['role'] ?? 'Administrator') ?></h4>
+        <h4>Role: <?= htmlspecialchars($admin['role']) ?></h4>
       </div>
     </div>
   </section>
 </div>
 
 <?php require_once '../includes/footer.php'; ?>
+/

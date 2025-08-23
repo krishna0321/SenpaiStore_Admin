@@ -3,7 +3,6 @@ session_start();
 require("../config/db.php");
 
 header('X-Frame-Options: DENY');
-
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,11 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute([$username]);
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($admin && password_verify($password, $admin['password'])) {
-      $_SESSION['admin_logged_in'] = true;
-      $_SESSION['admin_username'] = $admin['username'];
-      header("Location: ../index.php");
-      exit();
+    if ($admin) {
+      $dbPassword = $admin['password'];
+
+      // ✅ Check hashed OR plain text
+      if (password_verify($password, $dbPassword) || $password === $dbPassword) {
+        $_SESSION['admin_logged_in'] = true;
+        $_SESSION['admin_username'] = $admin['username'];
+        header("Location: ../index.php");
+        exit();
+      } else {
+        $error = "Invalid username or password.";
+      }
     } else {
       $error = "Invalid username or password.";
     }
@@ -38,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="../assets/plugins/fontawesome-free/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/adminlte.min.css">
   <style>
+    /* Your existing styles here */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -77,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     .form-control {
-      background-color: rgba(255, 255, 255, 0.07);
+      background-color: rgba(215, 200, 200, 0.07);
       border: none;
       border-bottom: 2px solid #888;
       color: #fff;
@@ -167,10 +174,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-6">
-          <a href="register.php" class="text-link">Register</a>
-        </div>
         <div class="col-6 text-right">
           <button type="submit" class="btn btn-primary btn-block">Sign In</button>
         </div>
@@ -202,6 +205,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       input.addEventListener('input', () => {
         input.style.borderColor = "#ff6ec4";
         input.style.boxShadow = "0 0 5px #ff6ec4";
+      });
+      input.addEventListener('blur', () => {
+        input.style.borderColor = "";
+        input.style.boxShadow = "";
       });
     });
   </script>

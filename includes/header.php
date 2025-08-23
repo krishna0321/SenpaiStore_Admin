@@ -26,7 +26,7 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
 function isActive($path) {
     global $current_page;
     return $current_page === $path ? 'active' : '';
-}
+} 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -83,7 +83,7 @@ function isActive($path) {
       <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
         <span class="dropdown-header">3 Notifications</span>
         <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item"><i class="fas fa-box mr-2"></i> New product added</a>
+        <a href="" class="dropdown-item"><i class="fas fa-box mr-2"></i> New product added</a>
         <div class="dropdown-divider"></div>
         <a href="#" class="dropdown-item"><i class="fas fa-shopping-cart mr-2"></i> New order received</a>
         <div class="dropdown-divider"></div>
@@ -95,8 +95,8 @@ function isActive($path) {
     <li class="nav-item dropdown">
       <a class="nav-link" data-toggle="dropdown" href="#"><i class="fas fa-user-circle"></i> <?= htmlspecialchars($admin_name) ?></a>
       <div class="dropdown-menu dropdown-menu-right">
-        <a href="#" class="dropdown-item"><i class="fas fa-user mr-2"></i> Profile</a>
-        <a href="#" class="dropdown-item"><i class="fas fa-cogs mr-2"></i> Settings</a>
+        <a href="/SenpaiStore_Admin/auth/profile.php" class="dropdown-item"><i class="fas fa-user mr-2"></i> Profile</a>
+        <a href="/SenpaiStore_Admin/auth/settings.php" class="dropdown-item"><i class="fas fa-cogs mr-2"></i> Settings</a>
         <div class="dropdown-divider"></div>
         <a href="/SenpaiStore_Admin/auth/logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
       </div>
@@ -138,7 +138,7 @@ function isActive($path) {
           </a>
         </li>
         <li class="nav-item">
-          <a href="/SenpaiStore_Admin/reports/index.php" class="nav-link <?= isActive('reports/index.php') ?>">
+          <a href="/SenpaiStore_Admin/reports/generate.php" class="nav-link <?= isActive('reports/index.php') ?>">
             <i class="nav-icon fas fa-chart-line"></i>
             <p>Reports</p>
           </a>
